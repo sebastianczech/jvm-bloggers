@@ -19,7 +19,7 @@ import static lombok.AccessLevel.PACKAGE;
 @RequiredArgsConstructor(access = PACKAGE)
 class TweetProducer {
 
-    private final TweetContentGenerator contentGenerator;
+    private final NewIssueTweetContentGenerator contentGenerator;
     private final TweetRepository tweetRepository;
     private final NowProvider nowProvider;
 

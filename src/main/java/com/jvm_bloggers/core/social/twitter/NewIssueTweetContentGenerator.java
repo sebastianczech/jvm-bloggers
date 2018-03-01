@@ -5,6 +5,7 @@ import com.jvm_bloggers.entities.blog.Blog;
 import com.jvm_bloggers.entities.blog_post.BlogPost;
 import com.jvm_bloggers.entities.newsletter_issue.NewsletterIssue;
 
+import io.vavr.API;
 import io.vavr.collection.List;
 
 import lombok.RequiredArgsConstructor;
@@ -14,31 +15,42 @@ import org.springframework.stereotype.Component;
 import org.stringtemplate.v4.ST;
 
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static lombok.AccessLevel.PACKAGE;
 
 @Component
 @Slf4j
 @RequiredArgsConstructor(access = PACKAGE)
-class TweetContentGenerator {
+class NewIssueTweetContentGenerator {
 
-    private static final int TWEET_MAX_LENGTH = 140;
+
+    private List<String> NEW_ISSUE_TWEET_PREFIXES = List.of(
+        "Nowy numer #<number> jest już online - <link> z postami m.in. ",
+        "Nowe wydanie #<number> jest już online - <link> z wpisami m.in. ",
+        "Możecie już przeczytać nowy numer JVM Bloggers #<number> - <link> z postami m.in. ",
+        "Jest piątek, jest nowy JVM Bloggers #<number> :) - <link> z postami m.in. ",
+        "Piątkowa porcja wpisów z polskiego świata JVM numer <number> jest juś online :) - <link> z postami m.in. "
+    );
+
+    private static final int TWEET_MAX_LENGTH = 280;
     private static final String MESSAGE_TEMPLATE =
         "Nowy numer #<number> już online - <link> z postami m.in. <personal1>"
             + "<if(company && personal2)>, <company> i <personal2>"
             + "<elseif(company)> i <company>"
             + "<elseif(personal2)> i <personal2><endif> #java #jvm";
-    private static final String SHORT_MESSAGE_TEMPLATE =
-        "Nowy numer #<number> już online - <link> z postami m.in. <personal>"
-            + "<if(company)> i <company><endif> #java #jvm";
 
     private final LinkGenerator linkGenerator;
 
     public String generateTweetContent(NewsletterIssue issue) {
+
+        String completeTemplate = NEW_ISSUE_TWEET_PREFIXES.shuffle().get(0)
+            + generateTwitterHandles(getPersonalBlogs(issue))
+
+            + "TODO";
+
         final List<String> personals =
-            List.ofAll(issue.getBlogPosts())
-                .map(BlogPost::getBlog)
-                .filter(Blog::isPersonal)
+
                 .map(Blog::getTwitter)
                 .filter(Objects::nonNull)
                 .shuffle()
@@ -64,16 +76,34 @@ class TweetContentGenerator {
         template.add("company", company);
         final String tweetContent = template.render();
 
-        if (tweetIsTooLong(tweetContent, issueLink.length())) {
-            final ST shortTemplate = new ST(SHORT_MESSAGE_TEMPLATE);
-            shortTemplate.add("number", issue.getIssueNumber());
-            shortTemplate.add("link", issueLink);
-            shortTemplate.add("personal", personals.head());
-            shortTemplate.add("company", company);
-            return shortTemplate.render();
-        } else {
-            return tweetContent;
-        }
+    }
+
+    private List<Blog> getPersonalBlogs(NewsletterIssue issue) {
+        return List.ofAll(issue.getBlogPosts())
+            .map(BlogPost::getBlog)
+            .filter(Blog::isPersonal);
+    }
+
+    private List<Blog> getCompanyBlogs(NewsletterIssue issue) {
+        return List.ofAll(issue.getBlogPosts())
+            .map(BlogPost::getBlog)
+            .filter(Blog::isCompany);
+    }
+
+    private String generateTwitterHandles(List<Blog> blogs, int maxNumberOfHandles) {
+        List<String> twitterHandles = blogs
+            .map(Blog::getTwitter)
+            .filter(Objects::nonNull)
+            .shuffle()
+            .take()
+
+        String handles = twitterHandles.collect(Collectors.joining(", "));
+        API.Match(twitterHandles.single()).of(
+            Case($Success($()), SUCCESS),
+            Case($Failure($()), ERROR)
+        )
+        )
+
     }
 
     private boolean tweetIsTooLong(String tweetContent, int originalIssuesLinkLength) {

@@ -10,8 +10,6 @@ import com.jvm_bloggers.entities.twitter.TweetRepository
 import com.jvm_bloggers.utils.NowProvider
 import spock.lang.Specification
 
-import java.time.LocalDateTime
-
 import static com.jvm_bloggers.entities.blog.BlogType.COMPANY
 import static com.jvm_bloggers.entities.blog.BlogType.PERSONAL
 
@@ -31,7 +29,7 @@ class TweetProducerSpec extends Specification {
 
     def "Should save a new Facebook post for a given issue"() {
         given:
-        TweetContentGenerator contentGenerator = new TweetContentGenerator(linkGenerator)
+        NewIssueTweetContentGenerator contentGenerator = new NewIssueTweetContentGenerator(linkGenerator)
         TweetRepository tweetRepository = Mock(TweetRepository)
 
         and:
