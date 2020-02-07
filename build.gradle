@@ -199,9 +199,9 @@ jacocoTestReport {
         xml.enabled true
         html.enabled false
     }
-
-    dependsOn 'test'
 }
+
+check.dependsOn jacocoTestReport
 
 task stage(dependsOn: ['build', 'clean'])
 build.mustRunAfter clean
