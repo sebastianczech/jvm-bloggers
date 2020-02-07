@@ -194,6 +194,15 @@ task validateBlogsData() {
     }
 }
 
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        html.enabled false
+    }
+
+    dependsOn 'test'
+}
+
 task stage(dependsOn: ['build', 'clean'])
 build.mustRunAfter clean
 
