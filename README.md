@@ -54,7 +54,7 @@ __Planned__
 
 * To import the project into your IDE execute `./gradlew eclipse` or `./gradlew idea` first (depending on your IDE) to generate project files and import them into IDE.
 
-* Admin UI is based on [http://startbootstrap.com/template-overviews/sb-admin-2/](http://startbootstrap.com/template-overviews/sb-admin-2/).
+* Admin UI is based on [SB Admin 2 template](https://startbootstrap.com/themes/sb-admin-2/).
 
 More details about contributing and how project is organized please check
 
@@ -81,5 +81,5 @@ More up-to date list can be found at http://jvm-bloggers.com/contributors
 If you need a direct contact, you can reach out to the JVM Bloggers project via:
 
 * GMail: jvmbloggers (at) (you know that).(and you know that too) :)
-* \#jvm-bloggers channel at JVM-Poland Slack
+* \#jvm-bloggers channel at [JVM-Poland Slack](http://jvm-bloggers.com/jvm-poland-slack)
 
